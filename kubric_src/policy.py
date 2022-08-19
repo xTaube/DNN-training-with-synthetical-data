@@ -2,7 +2,6 @@ import numpy as np
 from typing import List, Dict
 from dataclasses import dataclass
 from kubric import Quaternion
-from numpy import ndarray
 from numpy.random import uniform
 
 from type import Range

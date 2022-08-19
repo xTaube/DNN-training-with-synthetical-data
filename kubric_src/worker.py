@@ -1,14 +1,13 @@
-import logging
-import string
-
 import bpy
+import logging
 import kubric as kb
 import numpy as np
+import string
+from argparse import ArgumentParser
 from kubric.renderer.blender import Blender as KubricRenderer
 from kubric.simulator import PyBullet
 from random import choice, randint, sample
 from typing import Tuple, List, Dict
-from argparse import ArgumentParser
 
 from consts import KUBASIC_URI, HDRI_HAVEN_URI, SHAPENET_URI, IMAGE_SHAPE, CATEGORY
 from utils import (

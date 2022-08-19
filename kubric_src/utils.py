@@ -1,8 +1,8 @@
 import json
-import numpy as np
 import kubric as kb
-from typing import Optional, List, Dict
+import numpy as np
 from random import choice
+from typing import Optional, List, Dict
 
 from policy import ModelPolicy
 from consts import (
@@ -81,7 +81,7 @@ def load_policies(policy_file_path: str) -> List[ModelPolicy]:
 def draw_category(category: Optional[str] = None) -> str:
     """
     Draw category
-    :param category: our draw category must be the same type as given category e.g. VEHICLE or HOUSEHOLD_ITEM
+    :param category: optional parameter, useful when we want to draw category matching given category
     :return: category
     """
 
