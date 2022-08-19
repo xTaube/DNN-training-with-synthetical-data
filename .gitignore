@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Pycharm
+.idea
+
+kubric_src/dataset_dir/annotations/
+kubric_src/dataset_dir/images/
+datasets/

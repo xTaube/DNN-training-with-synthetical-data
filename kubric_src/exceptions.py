@@ -1,0 +1,2 @@
+class PolicyValidationError(Exception):
+    pass
