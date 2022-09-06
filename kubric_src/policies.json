@@ -71,7 +71,8 @@
     "scale": [9, 11],
     "camera_position_sphere_radius": [19, 27, 0.1],
     "camera_look_at_noise": [-1.5, 1.5],
-    "additional_objects_num": 1
+    "additional_objects_num": 2,
+    "min_visibility": 400
   },
   {
     "category": "skateboard",
@@ -96,7 +97,8 @@
     "scale": [6, 8],
     "camera_position_sphere_radius": [20, 30, 0.2],
     "camera_look_at_noise": [-1.5, 1.5],
-    "additional_objects_num": 5
+    "additional_objects_num": 9,
+    "min_visibility": 300
   },
   {
     "category": "bottle",
@@ -118,10 +120,11 @@
       }
     ],
     "spawn_region": [[-10, -10, 3], [10, 10, 6]],
-    "scale": [1.5, 2.5],
+    "scale": [4, 6],
     "camera_position_sphere_radius": [15, 20, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 2
+    "additional_objects_num": 6,
+    "min_visibility": 150
   },
   {
     "category": "mug",
@@ -146,7 +149,8 @@
     "scale": [1.5, 2.5],
     "camera_position_sphere_radius": [15, 20, 0.1],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 2
+    "additional_objects_num": 7,
+    "min_visibility": 500
   },
   {
     "category": "knife",
@@ -171,7 +175,8 @@
     "scale": [3, 4],
     "camera_position_sphere_radius": [20, 25, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 3
+    "additional_objects_num": 6,
+    "min_visibility": 50
   },
   {
     "category": "bowl",
@@ -196,7 +201,8 @@
     "scale": [2, 3.5],
     "camera_position_sphere_radius": [20, 25, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 7,
+    "min_visibility": 500
   },
   {
     "category": "bag",
@@ -221,7 +227,8 @@
     "scale": [4, 6],
     "camera_position_sphere_radius": [20, 25, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 8,
+    "min_visibility": 800
   },
   {
     "category": "chair",
@@ -240,9 +247,10 @@
     ],
     "spawn_region": [[-10, -10, 4], [10, 10, 7]],
     "scale": [7, 9],
-    "camera_position_sphere_radius": [20, 25, 0.2],
+    "camera_position_sphere_radius": [15, 20, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 5,
+    "min_visibility": 600
   },
   {
     "category": "bed",
@@ -260,10 +268,10 @@
       }
     ],
     "spawn_region": [[-14, -14, 4], [14, 14, 7]],
-    "scale": [12, 14],
+    "scale": [17, 21],
     "camera_position_sphere_radius": [27, 34, 0.1],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 3
+    "additional_objects_num": 0
   },
   {
     "category": "sofa",
@@ -281,10 +289,10 @@
       }
     ],
     "spawn_region": [[-14, -14, 4], [14, 14, 7]],
-    "scale": [12, 14],
+    "scale": [17, 21],
     "camera_position_sphere_radius": [27, 34, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 3
+    "additional_objects_num": 0
   },
   {
     "category": "computer_keyboard",
@@ -305,7 +313,8 @@
     "scale": [3, 5],
     "camera_position_sphere_radius": [20, 25, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 7,
+    "min_visibility": 1300
   },
   {
     "category": "cellular_telephone",
@@ -328,9 +337,10 @@
     ],
     "spawn_region": [[-10, -10, 2], [10, 10, 4]],
     "scale": [1, 2],
-    "camera_position_sphere_radius": [20, 25, 0.2],
+    "camera_position_sphere_radius": [13, 16, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 9,
+    "min_visibility": 350
   },
   {
     "category": "remote_control",
@@ -352,10 +362,11 @@
       }
     ],
     "spawn_region": [[-10, -10, 2], [10, 10, 4]],
-    "scale": [2, 3],
+    "scale": [2.5, 4],
     "camera_position_sphere_radius": [20, 25, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 7,
+    "min_visibility": 200
   },
   {
     "category": "laptop",
@@ -376,7 +387,8 @@
     "scale": [4, 6],
     "camera_position_sphere_radius": [20, 25, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 7,
+    "min_visibility": 700
   },
   {
     "category": "microwave",
@@ -390,10 +402,11 @@
       }
     ],
     "spawn_region": [[-13, -13, 3], [13, 13, 5]],
-    "scale": [5, 7],
+    "scale": [3.5, 6],
     "camera_position_sphere_radius": [20, 25, 0.2],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 5
+    "additional_objects_num": 5,
+    "min_visibility": 1500
   },
   {
     "category": "motorcycle",
@@ -412,10 +425,11 @@
       }
     ],
     "spawn_region": [[-25, -25, 4], [25, 25, 6]],
-    "scale": [8, 10],
+    "scale": [15, 19],
     "camera_position_sphere_radius": [29, 35, 0.1],
     "camera_look_at_noise": [-1, 1],
-    "additional_objects_num": 2
+    "additional_objects_num": 2,
+    "min_visibility": 300
   },
   {
     "category": "bus",
@@ -434,10 +448,11 @@
       }
     ],
     "spawn_region": [[-25, -25, 4], [25, 25, 6]],
-    "scale": [25, 30],
-    "camera_position_sphere_radius": [35, 39, 0.1],
+    "scale": [29, 34],
+    "camera_position_sphere_radius": [36, 39, 0.1],
     "camera_look_at_noise": [-2, 2],
-    "additional_objects_num": 2
+    "additional_objects_num": 2,
+    "min_visibility": 340
   },
   {
     "category": "car",
@@ -456,9 +471,10 @@
       }
     ],
     "spawn_region": [[-20, -20, 4], [20, 20, 6]],
-    "scale": [7, 10],
-    "camera_position_sphere_radius": [26, 27, 0.1],
+    "scale": [20, 25],
+    "camera_position_sphere_radius": [36, 39, 0.1],
     "camera_look_at_noise": [-2, 2],
-    "additional_objects_num": 2
+    "additional_objects_num": 2,
+    "min_visibility": 600
   }
 ]

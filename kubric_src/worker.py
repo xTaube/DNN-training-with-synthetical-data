@@ -64,6 +64,7 @@ def _create_model_obj(
     scale = policy.random_scale
     model.scale = scale / np.max(model.bounds[1] - model.bounds[0])
     model.metadata["scale"] = scale
+    model.metadata["category"] = category
     model.metadata["is_dynamic"] = False
     model.friction = 1
     model.restitution = 0
@@ -90,21 +91,21 @@ def _generate_image(
     kubasic: kb.AssetSource,
     shapenet: kb.AssetSource,
     hdri: kb.AssetSource,
-    policies: List[ModelPolicy],
+    policies: Dict[str, ModelPolicy],
 ) -> Tuple[Dict[str, np.ndarray], List[kb.Asset]]:
     """
     The core methods, generate image with random objects and random background
     :param kubasic: kubasic asset provider
     :param shapenet: shapenet asset provider
     :param hdri: hdri asset provider
-    :param policies: list of model policies
+    :param policies: dict with model policies
     :return: image frame, visible objects on this frame
     """
     scene = kb.Scene(resolution=IMAGE_SHAPE)
     simulator = PyBullet(scene)
     renderer = KubricRenderer(scene)
-    category = draw_category()
-    model_policy = next(filter(lambda m: m.category == category, policies))
+    category = CATEGORY.car
+    model_policy = policies[category]
     background = draw_background(model_policy.allowed_backgrounds)
     background_hdri = hdri.create(asset_id=background)
 
@@ -133,7 +134,7 @@ def _generate_image(
 
     for _ in range(randint(0, model_policy.additional_objects_num)):
         obj_cat = draw_category(category)
-        obj_policy = next(filter(lambda m: m.category == obj_cat, policies))
+        obj_policy = policies[obj_cat]
         obj_model = _create_model_obj(obj_cat, shapenet, obj_policy)
         scene.add(obj_model)
         try:
@@ -151,37 +152,45 @@ def _generate_image(
     if not category == CATEGORY.airplane:
         _, _ = simulator.run(frame_start=-100, frame_end=0)
 
-    frame = renderer.render_still()
+    raw_frame = renderer.render_still()
 
-    kb.compute_visibility(frame["segmentation"], scene.assets)
-    visible_assets = [
-        asset
-        for asset in scene.foreground_assets
-        if np.max(asset.metadata["visibility"]) > 0
-    ]
-    visible_assets = sorted(
-        visible_assets, key=lambda asset: np.sum(asset.metadata["visibility"])
+    kb.compute_visibility(raw_frame["segmentation"], scene.assets)
+
+    need_to_render = False
+    visible_assets = list()
+    for asset in scene.foreground_assets:
+        if np.sum(asset.metadata["visibility"]) > policies[asset.metadata["category"]].min_visibility*asset.metadata["scale"]:
+            logging.info(f"adding {asset.metadata['category']}")
+            visible_assets.append(asset)
+        else:
+            logging.info(f"removing {asset.metadata['category']}, visibility: {np.sum(asset.metadata['visibility'])}")
+            need_to_render = True
+            scene.remove(asset)
+
+    for asset in visible_assets:
+        asset.metadata["visibility"] = float(np.sum(asset.metadata["visibility"]))
+
+    postprocess_frame = renderer.render_still() if need_to_render else raw_frame
+
+    postprocess_frame["segmentation"] = kb.adjust_segmentation_idxs(
+        postprocess_frame["segmentation"], scene.assets, visible_assets
     )
+    compute_bboxes(postprocess_frame["segmentation"], visible_assets)
 
-    frame["segmentation"] = kb.adjust_segmentation_idxs(
-        frame["segmentation"], scene.assets, visible_assets
-    )
-    compute_bboxes(frame["segmentation"], visible_assets)
-
-    return frame, visible_assets
+    return postprocess_frame, visible_assets
 
 
-def main(series: str, output_dir: str, iteration: int) -> None:
+def main(name: str, output_dir: str, iteration: int) -> None:
     kubasic, shapenet, hdri = _load_asset_sources()
     policies = load_policies("policies.json")
 
-    logging.info(f"Series: {series}, iteration: {iteration}")
+    logging.info(f"Filename: {name}, iteration: {iteration}")
     frame, visible_assets = _generate_image(kubasic, shapenet, hdri, policies)
-    kb.write_png(frame["rgba"], f"{output_dir}/images/{series}_{iteration}.png")
+    kb.write_png(frame["rgba"], f"{output_dir}/images/{name}{iteration}.png")
 
-    image_data = {"resolution": IMAGE_SHAPE, "file_name": f"{series}_{iteration}.png"}
+    image_data = {"resolution": IMAGE_SHAPE, "file_name": f"{name}{iteration}.png"}
     kb.file_io.write_json(
-        filename=f"{output_dir}/annotations/{series}_{iteration}.json",
+        filename=f"{output_dir}/annotations/{name}{iteration}.json",
         data={
             "objects": get_instance_info(
                 visible_assets, data_keys=["bbox", "category", "visibility"]
@@ -196,9 +205,9 @@ if __name__ == "__main__":
     logging.basicConfig(level="INFO")
     parser = ArgumentParser()
     parser.add_argument(
-        "-s", "--series", type=str, default="".join(sample(string.ascii_lowercase, 16))
+        "-n", "--name", type=str, default="".join(sample(string.ascii_lowercase, 16))
     )
     parser.add_argument("-o", "--output_dir", type=str)
     parser.add_argument("-i", "--iteration", type=int)
     args = parser.parse_args()
-    main(args.series, args.output_dir, args.iteration)
+    main(args.name, args.output_dir, args.iteration)

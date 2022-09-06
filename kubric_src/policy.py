@@ -19,6 +19,7 @@ class ModelPolicy:
     camera_position_sphere_radius: List[float]
     camera_look_at_noise: List[float]
     additional_objects_num: int
+    min_visibility: int
 
     @property
     def random_rotation(self) -> Quaternion:

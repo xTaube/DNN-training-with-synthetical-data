@@ -16,6 +16,7 @@ from consts import (
     DEFAULT_ROTATION,
     DEFAULT_CAMERA_LOOK_AT_NOISE,
     DEFAULT_ADDITIONAL_OBJECTS_NUM,
+    DEFAULT_MIN_VISIBILITY
 )
 from exceptions import PolicyValidationError
 from type import Range
@@ -54,6 +55,7 @@ def _create_policy(policy: Dict[str, any]) -> ModelPolicy:
     additional_objects_num = policy.get(
         "additional_objects_num", DEFAULT_ADDITIONAL_OBJECTS_NUM
     )
+    min_visibility = policy.get("min_visibility", DEFAULT_MIN_VISIBILITY)
 
     return ModelPolicy(
         category=category,
@@ -64,10 +66,11 @@ def _create_policy(policy: Dict[str, any]) -> ModelPolicy:
         camera_position_sphere_radius=camera_position_sphere_radius,
         camera_look_at_noise=camera_look_at_noise,
         additional_objects_num=additional_objects_num,
+        min_visibility=min_visibility
     )
 
 
-def load_policies(policy_file_path: str) -> List[ModelPolicy]:
+def load_policies(policy_file_path: str) -> Dict[str, ModelPolicy]:
     """
     Parse model polices from file
     :param policy_file_path: path to file with policies
@@ -75,7 +78,7 @@ def load_policies(policy_file_path: str) -> List[ModelPolicy]:
     """
     with open(policy_file_path) as f:
         policies = json.load(f)
-        return [_create_policy(policy) for policy in policies]
+        return {policy["category"]: _create_policy(policy) for policy in policies}
 
 
 def draw_category(category: Optional[str] = None) -> str:

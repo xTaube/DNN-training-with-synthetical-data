@@ -24,7 +24,7 @@ CATEGORY = enum(
     "car",
 )
 
-VEHICLES = [CATEGORY.motorcycle, CATEGORY.bus, CATEGORY.car, CATEGORY.train]
+VEHICLES = [CATEGORY.motorcycle, CATEGORY.bus, CATEGORY.car]
 
 HOUSEHOLD_ITEMS = [
     CATEGORY.skateboard,
@@ -34,8 +34,6 @@ HOUSEHOLD_ITEMS = [
     CATEGORY.bowl,
     CATEGORY.bag,
     CATEGORY.chair,
-    CATEGORY.bed,
-    CATEGORY.sofa,
     CATEGORY.computer_keyboard,
     CATEGORY.cellular_telephone,
     CATEGORY.remote_control,
@@ -576,3 +574,4 @@ DEFAULT_SCALE = [1, 1]
 DEFAULT_SPAWN_REGION = [[0, 0, 0], [0, 0, 0]]
 DEFAULT_ROTATION = [{"axis": [1, 0, 0], "degrees": [0, 0]}]
 DEFAULT_ADDITIONAL_OBJECTS_NUM = 0
+DEFAULT_MIN_VISIBILITY = 0
