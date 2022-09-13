@@ -1,16 +1,28 @@
 import bpy
+import string
 from abc import abstractmethod
-from typing import Tuple
+from typing import Tuple, Any
 from pyquaternion import Quaternion
+from random import sample
+
+
 from src.render.blender.exceptions import ObjectReferenceNotExist
 
 
 class BlenderObject:
 
-    def __init__(self, location: Tuple[float, float, float] = (0, 0, 0), scale: Tuple[float, float, float] = (1, 1, 1), reference=None):
+    def __init__(
+            self,
+            location: Tuple[float, float, float] = (0, 0, 0),
+            scale: float = 1.0,
+            rotation: Quaternion = Quaternion(0, 0, 0, 0),
+            reference=None
+    ):
         self.reference = self._assign_reference(reference)
         self.scale = scale
         self.location = location
+        self.rotation = rotation
+        self.metadata = {}
 
     def _assign_reference(self, reference):
         if not reference:
@@ -28,8 +40,8 @@ class BlenderObject:
         return self.reference.scale
 
     @scale.setter
-    def scale(self, scale) -> None:
-        self.reference.scale = scale
+    def scale(self, scale: float) -> None:
+        self.reference.scale = (scale, scale, scale)
 
     @property
     def location(self) -> Tuple[int, int, int]:
@@ -57,7 +69,7 @@ class BlenderObject:
         if not self.reference:
             raise ObjectReferenceNotExist
         bpy.ops.object.select_all(action="DESELECT")
-        self.reference.select = True
+        self.reference.select_set(True)
         bpy.ops.object.delete()
         self.reference = None
 
@@ -66,3 +78,35 @@ class Cube(BlenderObject):
 
     def _create_reference_object(self) -> None:
         bpy.ops.mesh.primitive_cube_add()
+
+
+class ImportedObject(BlenderObject):
+
+    def __init__(
+            self,
+            path: str,
+            name: str = "".join(sample(string.ascii_lowercase, 4)),
+            location: Tuple[float, float, float] = (0, 0, 0),
+            scale: float = 1.0,
+            rotation: Quaternion = Quaternion(0, 0, 0, 0),
+            reference: Any = None
+    ):
+        self.path = path
+        self.name = name
+        super().__init__(location, scale, rotation, reference)
+
+    def add_texture(self, texture_path: str) -> None:
+        material = bpy.data.materials.new(name=f"mat_{self.name}")
+        material.use_nodes = True
+        bsdf = material.node_tree.nodes["Principled BSDF"]
+        texture = material.node_tree.nodes.new("ShaderNodeTexImage")
+        texture.image = bpy.data.images.load(texture_path)
+        material.node_tree.links.new(bsdf.inputs["Base Color"], texture.outputs["Color"])
+
+        if self.reference.data.materials:
+            self.reference.data.materials[0] = material
+        else:
+            self.reference.data.materials.append(material)
+
+    def _create_reference_object(self) -> None:
+        bpy.ops.import_scene.obj(filepath=self.path)

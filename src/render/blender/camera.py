@@ -3,7 +3,9 @@ import numpy as np
 from typing import Tuple
 from pyquaternion import Quaternion
 from mathutils import Vector
+
 from src.render.blender.blender_object import BlenderObject
+from src.render.blender.utils import str_direction_to_vector, normalize
 
 
 class Camera(BlenderObject):
@@ -11,20 +13,18 @@ class Camera(BlenderObject):
     def _create_reference_object(self):
         bpy.ops.object.camera_add()
 
-    def look_at(self, point: Tuple[float, float, float]) -> None:
-        target = np.array(point) - np.array(self.location)
-        target = np.divide(target, np.linalg.norm(target))
+    def look_at(self, point: Tuple[float, float, float], up: str = "Y", front: str = "-Z") -> None:
+        world_up = str_direction_to_vector("Z")
 
-        camera_origin_rotation_vec = np.array([0, 0, -1])
-        camera_origin_rotation_vec = np.divide(camera_origin_rotation_vec, np.linalg.norm(camera_origin_rotation_vec))
+        camera_up = normalize(str_direction_to_vector(up))
+        camera_front = normalize(str_direction_to_vector(front))
+        camera_right = np.cross(camera_up, camera_front)
 
-        rot_axis = np.cross(camera_origin_rotation_vec, target)
-        rot_angle = np.degrees(np.arccos(np.dot(camera_origin_rotation_vec, target)))
+        target_front = normalize(np.array(point) - np.array(self.location))
+        target_right = normalize(np.cross(world_up, target_front))
+        target_up = normalize(np.cross(target_front, target_right))
 
-        self.rotation = Quaternion(axis=rot_axis, angle=(np.pi/180 * rot_angle))
+        rotation_matrix1 = np.stack([target_right, target_up, target_front])
+        rotation_matrix2 = np.stack([camera_right, camera_up, camera_front])
 
-    def roll(self, angle: float) -> None:
-        focal_origin = Vector([0, 0, -1])
-        focal_axis = self.rotation.to_matrix() @ focal_origin
-        focal_axis = focal_axis/np.linalg.norm(focal_axis)
-        self.rotate(Quaternion(axis=focal_axis, angle=(np.pi/180*angle)))
+        self.rotation = Quaternion(matrix=(rotation_matrix1.T @ rotation_matrix2))

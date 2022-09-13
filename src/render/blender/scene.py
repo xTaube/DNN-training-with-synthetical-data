@@ -1,5 +1,6 @@
 import bpy
 import os
+import shutil
 import numpy as np
 from typing import Dict, List
 
@@ -8,7 +9,7 @@ from src.render.blender.consts import LAYER_MAP
 
 
 class Scene:
-    def __init__(self, scene, render_engine: str, file_format: str, temp_render_dir: str = os.getcwd()):
+    def __init__(self, scene, render_engine: str, file_format: str, temp_render_dir: str = os.path.join(os.getcwd(), "temp")):
         self.background = None
         self.camera = None
         self.objects = []
@@ -47,8 +48,19 @@ class Scene:
         links.new(render_layers_node.outputs['Image'], image_output_node.inputs['Image'])
         links.new(render_layers_node.outputs['IndexOB'], index_output_node.inputs['Image'])
 
-    def set_background(self, background):
-        self.background = background
+    def set_background(self, background_path) -> None:
+        node_tree = self._scene.world.node_tree
+        tree_nodes = node_tree.nodes
+        tree_nodes.clear()
+        node_background = tree_nodes.new(type="ShaderNodeBackground")
+        node_environment = tree_nodes.new("ShaderNodeTexEnvironment")
+        node_environment.image = bpy.data.images.load(background_path)
+        node_environment.location = -300, 0
+        node_output = tree_nodes.new(type="ShaderNodeOutputWorld")
+        node_output.location = 200, 0
+        links = node_tree.links
+        links.new(node_environment.outputs["Color"], node_background.inputs["Color"])
+        links.new(node_background.outputs["Background"], node_output.inputs["Surface"])
 
     def set_camera(self, camera):
         self.camera = camera
@@ -68,6 +80,8 @@ class Scene:
         if any([layer not in LAYER_MAP.keys() for layer in layers]):
             raise LayerNotSupported(f"Supported layers: {LAYER_MAP.keys()}")
 
-        bpy.ops.render.render(write_still=True)
-        return {layer: LAYER_MAP[layer](os.path.join(self._scene.render.filepath), layer, "Image0001.exr") for layer in layers}
+        bpy.ops.render.render(layer='CompositorNodeRLayers')
+        frame = {layer: LAYER_MAP[layer](os.path.join(self._scene.render.filepath, layer, "Image0001.exr")) for layer in layers}
+        shutil.rmtree(self._scene.render.filepath)
+        return frame
 

@@ -134,3 +134,4 @@ dmypy.json
 kubric_src/dataset_dir/annotations/
 kubric_src/dataset_dir/images/
 datasets/
+resources/
