@@ -1,6 +1,2 @@
-numpy
-opencv-python
-pyquaternion
-mathutils
-OpenEXR
-Imath
+blenderproc
+python-dotenv
