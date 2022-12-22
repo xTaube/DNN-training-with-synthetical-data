@@ -4,19 +4,35 @@ import shutil
 import numpy as np
 from typing import Dict, List
 
-from src.render.blender.exceptions import ObjectAlreadyAddedToScene, ObjectNotInScene, LayerNotSupported
+from src.render.blender.exceptions import (
+    ObjectAlreadyAddedToScene,
+    ObjectNotInScene,
+    LayerNotSupported,
+)
 from src.render.blender.consts import LAYER_MAP
 
 
 class Scene:
-    def __init__(self, scene, render_engine: str, file_format: str, temp_render_dir: str = os.path.join(os.getcwd(), "temp")):
+    def __init__(
+        self,
+        scene,
+        render_engine: str,
+        file_format: str,
+        temp_render_dir: str = os.path.join(os.getcwd(), "temp"),
+    ):
         self.background = None
         self.camera = None
         self.objects = []
         self._scene = scene
-        self._configure_render(render_engine=render_engine, temp_render_dir=temp_render_dir, file_format=file_format)
+        self._configure_render(
+            render_engine=render_engine,
+            temp_render_dir=temp_render_dir,
+            file_format=file_format,
+        )
 
-    def _configure_render(self, render_engine: str, temp_render_dir: str, file_format: str) -> None:
+    def _configure_render(
+        self, render_engine: str, temp_render_dir: str, file_format: str
+    ) -> None:
         self._scene.render.engine = render_engine
         self._scene.render.filepath = temp_render_dir
         self._scene.render.image_settings.file_format = file_format
@@ -35,18 +51,22 @@ class Scene:
         image_output_node = tree.nodes.new(type="CompositorNodeOutputFile")
         image_output_node.label = "RGB_output"
         image_output_node.base_path = os.path.join(temp_render_dir, "RGB")
-        image_output_node.location = 400, 0
+        image_output_node.set_location = 400, 0
 
         index_output_node = tree.nodes.new(type="CompositorNodeOutputFile")
         index_output_node.label = "segmentation_output"
         index_output_node.base_path = os.path.join(temp_render_dir, "segmentation")
-        index_output_node.location = 400, -200
+        index_output_node.set_location = 400, -200
 
         render_layers_node = tree.nodes.new(type="CompositorNodeRLayers")
-        render_layers_node.location = 0, 0
+        render_layers_node.set_location = 0, 0
 
-        links.new(render_layers_node.outputs['Image'], image_output_node.inputs['Image'])
-        links.new(render_layers_node.outputs['IndexOB'], index_output_node.inputs['Image'])
+        links.new(
+            render_layers_node.outputs["Image"], image_output_node.inputs["Image"]
+        )
+        links.new(
+            render_layers_node.outputs["IndexOB"], index_output_node.inputs["Image"]
+        )
 
     def set_background(self, background_path) -> None:
         node_tree = self._scene.world.node_tree
@@ -55,9 +75,9 @@ class Scene:
         node_background = tree_nodes.new(type="ShaderNodeBackground")
         node_environment = tree_nodes.new("ShaderNodeTexEnvironment")
         node_environment.image = bpy.data.images.load(background_path)
-        node_environment.location = -300, 0
+        node_environment.set_location = -300, 0
         node_output = tree_nodes.new(type="ShaderNodeOutputWorld")
-        node_output.location = 200, 0
+        node_output.set_location = 200, 0
         links = node_tree.links
         links.new(node_environment.outputs["Color"], node_background.inputs["Color"])
         links.new(node_background.outputs["Background"], node_output.inputs["Surface"])
@@ -80,8 +100,12 @@ class Scene:
         if any([layer not in LAYER_MAP.keys() for layer in layers]):
             raise LayerNotSupported(f"Supported layers: {LAYER_MAP.keys()}")
 
-        bpy.ops.render.render(layer='CompositorNodeRLayers')
-        frame = {layer: LAYER_MAP[layer](os.path.join(self._scene.render.filepath, layer, "Image0001.exr")) for layer in layers}
+        bpy.ops.render.render(layer="CompositorNodeRLayers")
+        frame = {
+            layer: LAYER_MAP[layer](
+                os.path.join(self._scene.render.filepath, layer, "Image0001.exr")
+            )
+            for layer in layers
+        }
         shutil.rmtree(self._scene.render.filepath)
         return frame
-

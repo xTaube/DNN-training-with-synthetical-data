@@ -10,13 +10,12 @@ from src.render.blender.exceptions import ObjectReferenceNotExist
 
 
 class BlenderObject:
-
     def __init__(
-            self,
-            location: Tuple[float, float, float] = (0, 0, 0),
-            scale: float = 1.0,
-            rotation: Quaternion = Quaternion(0, 0, 0, 0),
-            reference=None
+        self,
+        location: Tuple[float, float, float] = (0, 0, 0),
+        scale: float = 1.0,
+        rotation: Quaternion = Quaternion(0, 0, 0, 0),
+        reference=None,
     ):
         self.reference = self._assign_reference(reference)
         self.scale = scale
@@ -45,11 +44,11 @@ class BlenderObject:
 
     @property
     def location(self) -> Tuple[int, int, int]:
-        return self.reference.location
+        return self.reference.set_location
 
     @location.setter
     def location(self, location) -> None:
-        self.reference.location = location
+        self.reference.set_location = location
 
     @property
     def rotation(self):
@@ -57,12 +56,14 @@ class BlenderObject:
 
     @rotation.setter
     def rotation(self, quaternion: Quaternion) -> None:
-        self.reference.rotation_mode = 'QUATERNION'
+        self.reference.rotation_mode = "QUATERNION"
         self.reference.rotation_quaternion = quaternion.q
 
     def rotate(self, quaternion: Quaternion) -> None:
         self.reference.rotation_mode = "QUATERNION"
-        current_rotation = Quaternion(axis=self.rotation.axis, angle=self.rotation.angle)
+        current_rotation = Quaternion(
+            axis=self.rotation.axis, angle=self.rotation.angle
+        )
         self.rotation = current_rotation * quaternion
 
     def delete(self) -> None:
@@ -75,21 +76,19 @@ class BlenderObject:
 
 
 class Cube(BlenderObject):
-
     def _create_reference_object(self) -> None:
         bpy.ops.mesh.primitive_cube_add()
 
 
 class ImportedObject(BlenderObject):
-
     def __init__(
-            self,
-            path: str,
-            name: str = "".join(sample(string.ascii_lowercase, 4)),
-            location: Tuple[float, float, float] = (0, 0, 0),
-            scale: float = 1.0,
-            rotation: Quaternion = Quaternion(0, 0, 0, 0),
-            reference: Any = None
+        self,
+        path: str,
+        name: str = "".join(sample(string.ascii_lowercase, 4)),
+        location: Tuple[float, float, float] = (0, 0, 0),
+        scale: float = 1.0,
+        rotation: Quaternion = Quaternion(0, 0, 0, 0),
+        reference: Any = None,
     ):
         self.path = path
         self.name = name
@@ -101,7 +100,9 @@ class ImportedObject(BlenderObject):
         bsdf = material.node_tree.nodes["Principled BSDF"]
         texture = material.node_tree.nodes.new("ShaderNodeTexImage")
         texture.image = bpy.data.images.load(texture_path)
-        material.node_tree.links.new(bsdf.inputs["Base Color"], texture.outputs["Color"])
+        material.node_tree.links.new(
+            bsdf.inputs["Base Color"], texture.outputs["Color"]
+        )
 
         if self.reference.data.materials:
             self.reference.data.materials[0] = material

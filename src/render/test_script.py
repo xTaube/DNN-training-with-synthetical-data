@@ -15,7 +15,7 @@ import src.render as render
 
 render_filepath = os.path.join(src_dir)
 scene = bld.Scene(bpy.data.scenes[0], render_engine="CYCLES", file_format="OPEN_EXR")
-cube = bld.Cube(reference=bpy.data.objects['Cube'])
+cube = bld.Cube(reference=bpy.data.objects["Cube"])
 cube.delete()
 
 background = render.draw_background(os.path.join(src_dir, "resources", "backgrounds"))
@@ -23,22 +23,28 @@ scene.set_background(background)
 
 for _ in range(5):
     category = render.draw_category(os.path.join(src_dir, "resources", "categories"))
-    model_path = render.draw_model(os.path.join(src_dir, 'resources', "categories", category))
+    model_path = render.draw_model(
+        os.path.join(src_dir, "resources", "categories", category)
+    )
     scale = np.random.uniform(10, 16)
     location = np.random.uniform(-5, 5, 3)
     rotation = Quaternion.random()
-    model = bld.ImportedObject(path=model_path, location=tuple(location), scale=scale, rotation=rotation)
+    model = bld.ImportedObject(
+        path=model_path, location=tuple(location), scale=scale, rotation=rotation
+    )
     texture_path = render.get_model_texture_path(model_path)
     model.add_texture(texture_path)
     model.metadata["category"] = category
     model.metadata["scale"] = scale
     scene.add_object(model)
 
-camera = bld.Camera(reference=bpy.data.objects['Camera'], location=(40, -8, 3))
+camera = bld.Camera(reference=bpy.data.objects["Camera"], location=(40, -8, 3))
 scene.set_camera(camera)
 
 camera.look_at((0, 0, 0))
 
 frame = scene.render_image(["RGB", "segmentation"])
 render.save_rgb_array_as_png(frame["RGB"], os.path.join(src_dir, "rgb.png"))
-render.save_segmentation_array_as_png(frame["segmentation"], os.path.join(src_dir, "seg.png"))
+render.save_segmentation_array_as_png(
+    frame["segmentation"], os.path.join(src_dir, "seg.png")
+)

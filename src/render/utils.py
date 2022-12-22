@@ -12,7 +12,7 @@ def save_rgb_array_as_png(array: np.ndarray, filepath: str) -> None:
 
 def save_segmentation_array_as_png(array: np.ndarray, filepath: str) -> None:
     different_objects_count = len(np.unique(array))
-    scaled = array * np.uint8(255/different_objects_count)
+    scaled = array * np.uint8(255 / different_objects_count)
     hsv_map = cv2.applyColorMap(scaled, cv2.COLORMAP_HSV)
     cv2.imwrite(filepath, hsv_map)
 

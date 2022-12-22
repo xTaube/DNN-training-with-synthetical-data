@@ -9,11 +9,12 @@ from src.render.blender.utils import str_direction_to_vector, normalize
 
 
 class Camera(BlenderObject):
-
     def _create_reference_object(self):
         bpy.ops.object.camera_add()
 
-    def look_at(self, point: Tuple[float, float, float], up: str = "Y", front: str = "-Z") -> None:
+    def look_at(
+        self, point: Tuple[float, float, float], up: str = "Y", front: str = "-Z"
+    ) -> None:
         world_up = str_direction_to_vector("Z")
 
         camera_up = normalize(str_direction_to_vector(up))

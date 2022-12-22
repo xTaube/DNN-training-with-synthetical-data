@@ -9,7 +9,7 @@ def main(dataset_dir: str) -> None:
     dataset = fo.Dataset.from_dir(
         data_path=dataset_dir,
         dataset_type=dataset_type,
-        labels_path=f"{dataset_dir}/coco_annotations.json"
+        labels_path=f"{dataset_dir}/coco_annotations.json",
     )
     session = fo.launch_app(dataset, desktop=True)
     session.wait()

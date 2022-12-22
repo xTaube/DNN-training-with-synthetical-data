@@ -1,6 +1,7 @@
 import numpy as np
-from blenderproc.python.types.MeshObjectUtility import MeshObject, Entity
-from typing import List
+from typing import List, Dict, Any
+
+from blenderproc.python.types.MeshObjectUtility import MeshObject
 
 
 def get_object_size(obj: MeshObject) -> np.ndarray:
@@ -15,11 +16,13 @@ def is_overlapping(bbox1: np.ndarray, bbox2: np.ndarray) -> bool:
     x_min2, y_min2, z_min2 = np.min(bbox2, axis=0)
     x_max2, y_max2, z_max2 = np.max(bbox2, axis=0)
 
-    return all([
-        x_min1 <= x_max2,
-        x_max1 >= x_min2,
-        y_min1 <= y_max2,
-        y_max1 >= y_min2,
-        z_min1 <= z_max2,
-        z_max1 >= z_min2
-    ])
+    return all(
+        [
+            x_min1 <= x_max2,
+            x_max1 >= x_min2,
+            y_min1 <= y_max2,
+            y_max1 >= y_min2,
+            z_min1 <= z_max2,
+            z_max1 >= z_min2,
+        ]
+    )
